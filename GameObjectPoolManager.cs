@@ -8,12 +8,27 @@ public class MaxPoolSizeException : Exception {}
 
 
 namespace Smackware.ObjectPool
-{    
-
+{
+    /*
+     * A singleton instance of this will be auto-created in the static constructor
+     * 
+     * Immediate Usage:
+     *      
+     * 
+     * GameObject newInstance = GameObjectPoolManager.Borrow(GameObjectPrefab);
+     * MyScript newInstance2 = GameObjectPoolManager.Borrow<MyScript>(myScriptPrefab, newParent: Transform);
+     * 
+     * 
+     * // When we're done, we give the objects back to the pool. The pool manager will auto-deactivate the gameObject of each.
+     * GameObjectPoolManager.Revert(newInstance);
+     * GameObjectPoolManager.Revert(newInstance2);
+     * 
+     * 
+     */
     public class GameObjectPoolManager : MonoBehaviour
     {
-
-        internal class DynamicGameObjectPool : DynamicObjectPool<GameObject>
+        /* This class describes a Pool of a single prefab type */
+        private class DynamicGameObjectPool : DynamicObjectPool<GameObject>
         {
             private GameObject _prefab;
             public DynamicGameObjectPool(GameObject prefab, int maxSize)
@@ -35,15 +50,18 @@ namespace Smackware.ObjectPool
         private static GameObjectPoolManager _singleton;
         private Transform _transform;
 
+        #region Static Constructor
         static GameObjectPoolManager()
         {
             GameObject go = new GameObject("ObjectPoolManager");
             _singleton = go.AddComponent<GameObjectPoolManager>();
         }
+        #endregion
 
         void Awake()
         {
             _transform = transform;
+            _transform.hideFlags = HideFlags.HideInInspector | HideFlags.HideInHierarchy;	
         }
 
         public static GameObject Borrow(GameObject prefab)
