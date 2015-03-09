@@ -8,6 +8,7 @@ Put the files somewhere in your project
 
 Example usage
 ```
+using UnityEngine;
 using Smackware.ObjectPool;
 
 public class Test : MonoBehaviour
