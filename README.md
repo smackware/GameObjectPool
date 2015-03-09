@@ -22,7 +22,7 @@ public class Test : MonoBehaviour
 
   private void Start()
   {
-    // Borrow a simple game object
+    // Borrow a simple game object. The pool will either grant us an existing instance it has, or create a new instance
     instance1 = GameObjectPoolManager.Borrow(Prefab1);
     instance1.transform.position = Vector3.zero;
     
