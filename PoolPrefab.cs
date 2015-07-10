@@ -8,6 +8,9 @@ namespace Smackware.ObjectPool
     public class PoolPrefab : MonoBehaviour
     {
         public GameObject SourcePrefab;
+        
+        public virtual void OnRevert() {}
+        public virtual void OnBorrow() { }
     }
 
 }

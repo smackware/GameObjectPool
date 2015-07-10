@@ -40,12 +40,22 @@ namespace Smackware.ObjectPool
             public override GameObject CreateNew()
             {
                 GameObject obj = (GameObject)GameObject.Instantiate(_prefab);
-                PoolPrefab poolPrefab = obj.AddComponent<PoolPrefab>();
+                var poolPrefab = GetOrAddPoolPrefabComponent(obj);
                 poolPrefab.SourcePrefab = _prefab;
                 return obj;
             }
 
+            public static PoolPrefab GetOrAddPoolPrefabComponent(GameObject obj)
+            {
+                PoolPrefab o = obj.GetComponent<PoolPrefab>();
+                if (o == null)
+                {
+                    o = obj.AddComponent<PoolPrefab>();
+                }
+                return o;
+            }
         }
+
 
         private static GameObjectPoolManager _singleton;
         private Transform _transform;
@@ -84,7 +94,7 @@ namespace Smackware.ObjectPool
             }
             return instanceComponent;
         }
-
+        
 
         public static T Borrow<T>(T prefab) where T : MonoBehaviour
         {
@@ -122,13 +132,17 @@ namespace Smackware.ObjectPool
         private GameObject _borrow(GameObject prefab)
         {
             GameObject item = GetPoolFor(prefab).Borrow();
+            PoolPrefab poolPrefab = DynamicGameObjectPool.GetOrAddPoolPrefabComponent(item);
             item.SetActive(true);
+            poolPrefab.OnBorrow();
             return item;
         }
 
         private void _revert(GameObject prefab, GameObject instance)
-        {
+        {            
             instance.transform.SetParent(_transform);
+            PoolPrefab poolPrefab = DynamicGameObjectPool.GetOrAddPoolPrefabComponent(prefab);
+            poolPrefab.OnRevert();
             instance.SetActive(false);
             GetPoolFor(prefab).Revert(instance);
         }
